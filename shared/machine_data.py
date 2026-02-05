@@ -7,10 +7,9 @@ class MachineData:
     quality: Quality
     speed: float
     modules: list[Module]
-    module_quality: Quality
     beacons: int
     beacon_quality: Quality
-    level: int = 0  # only applicable to assemblers
+    level: int = 1  # only applicable to assemblers, available: 1, 2, 3
 
 class MachineName:
     ASM = "assembler"
