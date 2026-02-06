@@ -61,8 +61,25 @@ def prepare_refinery_machine(constants) -> Machine:
 
 def prepare_chm_machine(constants) -> Machine:
     chm_quality = Quality.LEGENDARY
-    chm_data = MachineData(constants["machines"][MachineName.CH_PLANT][str(chm_quality.value)], [])
-    chm_beacons = (Beacon(), 0)
+    chm_modules = [
+        Module(ModuleName.PRODUCTIVITY, 3, Quality.LEGENDARY),
+        Module(ModuleName.PRODUCTIVITY, 3, Quality.LEGENDARY),
+        Module(ModuleName.PRODUCTIVITY, 3, Quality.LEGENDARY)
+    ]
+    chm_data = MachineData(constants["machines"][MachineName.CH_PLANT][str(chm_quality.value)], chm_modules)
+
+    beacon_qty = 4
+    beacon_quality = Quality.LEGENDARY
+    beacon_modules = [
+        Module(ModuleName.SPEED, 3, Quality.LEGENDARY),
+        Module(ModuleName.SPEED, 3, Quality.LEGENDARY),
+    ]
+
+    chm_beacons = (
+        Beacon(constants["beacons"][str(beacon_quality.value)], beacon_modules),
+        beacon_qty
+    )
+
     return Machine(chm_data, constants["modules"], chm_beacons)
 
 

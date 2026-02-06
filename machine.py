@@ -26,10 +26,28 @@ class Machine:
             return speed
 
         comb_trans_str = self._get_comb_trans_str(*self.beacons)
-        multiplier += comb_trans_str * self._get_speed_bonus()
-        return speed * multiplier
+        multiplier += comb_trans_str * self._get_speed_bonus_beacons()
+        multiplier += self._get_speed_bonus_modules()
+        return speed * max(multiplier, 0.2)  # 0.2 is a cap in Factorio
 
-    def _get_speed_bonus(self):
+    def _get_speed_bonus_modules(self):
+        bonus = 0
+        for module in self.data.modules:
+            if module.name == ModuleName.SPEED:
+                bonus += (
+                    self.module_data[module.name.value][str(module.level)][
+                        str(module.quality.value)
+                    ]
+                )
+            elif module.name == ModuleName.PRODUCTIVITY:
+                bonus -= (
+                    self.module_data[module.name.value][str(module.level)][
+                        "speed_decrease"
+                    ]
+                )
+        return bonus
+
+    def _get_speed_bonus_beacons(self):
         bonus = 0
         beacon = self.beacons[0]
         for module in beacon.modules:
