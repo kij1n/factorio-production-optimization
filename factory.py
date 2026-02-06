@@ -1,7 +1,7 @@
 from production import Production
-from shared import Machine, Item, Recipe, MachineName
+from shared import Item, Recipe, MachineName, RecipeName
 import numpy as np
-
+from machine import Machine
 
 class Factory:
     def __init__(
@@ -28,7 +28,7 @@ class Factory:
     def _create_production_instances(self) -> list[Production]:
         productions = []
         for recipe in self.used_recipes:
-            production = Production(recipe, self.machines[recipe.machine_name])
+            production = Production(recipe, self.machines.get(recipe.machine_name, None))
             productions.append(production)
         return productions
 
@@ -38,19 +38,25 @@ class Factory:
             for recipe in self.forced_recipes:
                 if output in recipe.output_values.keys():
                     recipes.append(recipe)
-                    continue
-            for recipe in available_recipes:
+                    break
+            for recipe in available_recipes.values():
                 if output in recipe.output_values.keys():
+                    if recipe in recipes:
+                        continue
                     recipes.append(recipe)
+                    break
         for input_resource in self.inputs:
-            recipe = Recipe({}, {input_resource: 1}, 1, None)
+            recipe = Recipe({}, {input_resource: 1}, 1, None, RecipeName.NO_RECIPE)
             recipes.append(recipe)
         return recipes
 
     def _find_items(self) -> set[Item]:
         items = set()
         for recipe in self.used_recipes:
-            items.add(recipe.input_values.keys())
+            for item in recipe.input_values.keys():
+                items.add(item)
+            for item in recipe.output_values.keys():
+                items.add(item)
         return items
 
     def create_master_matrix(self):
@@ -59,8 +65,7 @@ class Factory:
             recipe_array = production.get_recipe_array(self.used_items)
             arrays.append(recipe_array)
 
-        master_matrix = np.array(*arrays).transpose()
-
+        master_matrix = np.array([*arrays]).transpose()
         solution_array = []
         for item in sorted(self.used_items):
             solution_array.append(self.outputs.get(item, 0))
@@ -74,10 +79,10 @@ class Factory:
         solution_array = np.linalg.solve(self.master_matrix, self.solution_vector)
         self.recipe_count = solution_array
 
-    def get_machine_count(self):
+    def get_machine_count(self) -> dict[Recipe, int]:
         machines = {}
         for i, production in enumerate(self.productions):
-            machines[production.recipe.recipe_name] = production.get_machines_qty(
-                self.recipe_count(i)
+            machines[production.augmented_recipe] = production.get_machines_qty(
+                self.recipe_count[i]
             )
         return machines

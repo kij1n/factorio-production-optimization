@@ -1,5 +1,6 @@
 from beacon import Beacon
 from factory import Factory
+from machine import Machine
 from shared import *
 import json_loader
 
@@ -31,37 +32,64 @@ def get_recipes():
     return recipes
 
 
-def prepare_machines(constants: dict):
+def prepare_refinery_machine(constants) -> Machine:
+    refinery_quality = Quality.LEGENDARY
+    refinery_modules = [
+        Module(ModuleName.PRODUCTIVITY, 3, Quality.LEGENDARY),
+        Module(ModuleName.PRODUCTIVITY, 3, Quality.LEGENDARY),
+        Module(ModuleName.PRODUCTIVITY, 3, Quality.LEGENDARY)
+    ]
+
+    refinery_data = MachineData(
+        constants["machines"][MachineName.REFINERY][str(refinery_quality.value)], []
+    )
+
+    beacon_qty = 4
+    beacon_quality = Quality.LEGENDARY
+    beacon_modules = [
+        Module(ModuleName.SPEED, 3, Quality.LEGENDARY),
+        Module(ModuleName.SPEED, 3, Quality.LEGENDARY),
+    ]
+
+    refinery_beacons = (
+        Beacon(constants["beacons"][str(beacon_quality.value)], beacon_modules),
+        beacon_qty
+    )
+
+    return Machine(refinery_data, constants["modules"], refinery_beacons)
+
+
+def prepare_chm_machine(constants) -> Machine:
+    chm_quality = Quality.LEGENDARY
+    chm_data = MachineData(constants["machines"][MachineName.CH_PLANT][str(chm_quality.value)], [])
+    chm_beacons = (Beacon(), 0)
+    return Machine(chm_data, constants["modules"], chm_beacons)
+
+
+def prepare_asm_machine(constants) -> Machine:
     asm_level = 1
-    asm_quality = Quality.NORMAL
+    asm_quality = Quality.LEGENDARY
     asm_data = MachineData(
-        constants[MachineName.ASM][asm_level][asm_quality.value], [], asm_level
+        constants["machines"][MachineName.ASM][str(asm_level)][str(asm_quality.value)], [], asm_level
     )
     asm_beacons = (Beacon(), 0)
+    return Machine(asm_data, constants["modules"], asm_beacons)
 
-    chm_quality = Quality.NORMAL
-    chm_data = MachineData(constants[MachineName.CH_PLANT][chm_quality.value], [])
-    chm_beacons = (Beacon(), 0)
 
-    refinery_quality = Quality.NORMAL
-    refinery_data = MachineData(
-        constants[MachineName.REFINERY][refinery_quality.value], []
-    )
-    refinery_beacons = (Beacon(), 0)
-
+def prepare_machines(constants: dict):
     machines = {
-        MachineName.ASM: Machine(asm_data, constants["modules"], asm_beacons),
-        MachineName.CH_PLANT: Machine(chm_data, constants["modules"], chm_beacons),
-        MachineName.REFINERY: Machine(
-            refinery_data, constants["modules"], refinery_beacons
-        ),
+        MachineName.ASM: prepare_asm_machine(constants),
+        MachineName.CH_PLANT: prepare_chm_machine(constants),
+        MachineName.REFINERY: prepare_refinery_machine(constants),
     }
     return machines
 
 
 def print_results(solutions: dict):
     for recipe, machine_count in solutions.items():
-        print(f"{recipe.recipe_name}: machine_count ({recipe.machine_name})")
+        if recipe.recipe_name == RecipeName.NO_RECIPE:
+            continue
+        print(f"{recipe.recipe_name} ({recipe.machine_name}): {machine_count}")
 
 
 def main():
@@ -69,13 +97,17 @@ def main():
     constants = json_loader.load_const()
     machines = prepare_machines(constants)
 
-    outputs = {Item.HEAVY_OIL: 0, Item.LIGHT_OIL: 0, Item.PETROLEUM_GAS: 100}
+    outputs = {Item.HEAVY_OIL: 326.25, Item.LIGHT_OIL: 1603.658, Item.PETROLEUM_GAS: 29622.717}
     inputs = [Item.WATER, Item.CRUDE_OIL]
 
     factory = Factory(outputs, inputs, machines, available_recipes, [])
 
-    factory.create_master_matix()
+    factory.create_master_matrix()
     factory.find_solution()
 
     solutions = factory.get_machine_count()
     print_results(solutions)
+
+
+if __name__ == "__main__":
+    main()

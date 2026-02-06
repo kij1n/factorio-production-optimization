@@ -1,25 +1,32 @@
-from shared import Recipe, Machine, Item
+from shared import Recipe, Item
 import numpy as np
-
+from machine import Machine
 
 class Production:
     def __init__(self, recipe: Recipe, machine: Machine):
-        self.augmented_recipe = self._calc_recipe_values(recipe)
-        self.recipe = recipe
         self.machine = machine
+        self.augmented_recipe = self._calc_recipe_values(recipe)
 
     def _calc_recipe_values(self, recipe) -> Recipe:
-        aug_recipe = recipe.copy()
+        if self.machine is None:
+            return recipe
+
+        aug_recipe = recipe
         prod = recipe.base_prod + self.machine.get_prod()
         aug_recipe.output_values = {
             key: value * prod for key, value in aug_recipe.output_values.items()
         }
         return aug_recipe
 
+    def print_recipe_per_sec(self):
+        pass
+
     def get_machines_qty(self, recipes_per_sec: float) -> int:
+        speed = self.machine.get_speed() if self.machine is not None else 1
+
         return int(
             np.ceil(
-                recipes_per_sec * self.augmented_recipe.time / self.machine.get_speed()
+                recipes_per_sec * self.augmented_recipe.time / speed
             )
         )
 

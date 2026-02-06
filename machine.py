@@ -22,6 +22,9 @@ class Machine:
         speed = self.data.speed
         multiplier = 1
 
+        if self.beacons[1] <= 0:
+            return speed
+
         comb_trans_str = self._get_comb_trans_str(*self.beacons)
         multiplier += comb_trans_str * self._get_speed_bonus()
         return speed * multiplier
@@ -32,8 +35,8 @@ class Machine:
         for module in beacon.modules:
             if module.name == ModuleName.SPEED:
                 bonus += (
-                    self.module_data[module.name.value][module.level][
-                        module.quality.value
+                    self.module_data[module.name.value][str(module.level)][
+                        str(module.quality.value)
                     ]
                     / 100
                 )

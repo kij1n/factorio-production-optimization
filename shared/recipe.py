@@ -2,6 +2,7 @@ from shared import MachineName
 
 
 class RecipeName:
+    NO_RECIPE = None
     ADVANCED_OIL_PROCESSING = "advanced-oil-processing"
     HEAVY_OIL_CRACKING = "heavy-oil-cracking"
     LIGHT_OIL_CRACKING = "light-oil-cracking"
