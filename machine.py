@@ -1,3 +1,4 @@
+from beacon import Beacon
 from shared import ModuleName
 from shared.machine_data import *
 
@@ -8,10 +9,10 @@ class Machine:
     Its modules, beacons, speed, quality, etc.
     """
 
-    def __init__(self, name: MachineName, data: MachineData, module_data: dict):
-        self.name = name
+    def __init__(self,data: MachineData, module_data: dict, beacons: tuple[Beacon, int]):
         self.data = data
         self.module_data = module_data
+        self.beacons = beacons
 
     def get_speed(self):
         # calculate speed based on modules, beacons, etc.

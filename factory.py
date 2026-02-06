@@ -1,5 +1,6 @@
 from production import Production
 from shared import Machine, Item, Recipe, MachineName
+import numpy as np
 
 
 class Factory:
@@ -8,8 +9,8 @@ class Factory:
         outputs: dict[Item, float],
         inputs: list[Item],
         machines: dict[MachineName, Machine],
-        forced_recipes: list[Recipe],
         available_recipes: list[Recipe],
+        forced_recipes: list[Recipe] = None,
     ):
         self.outputs = outputs
         self.inputs = inputs
@@ -19,6 +20,9 @@ class Factory:
         self.used_recipes = self._find_recipes(available_recipes)
         self.used_items = self._find_items()
         self.productions = self._create_production_instances()
+
+        self.master_matrix = None
+        self.solution_vector = None
 
     def _create_production_instances(self) -> list[Production]:
         productions = []
@@ -47,3 +51,20 @@ class Factory:
         for recipe in self.used_recipes:
             items.add(recipe.input_values.keys())
         return items
+
+    def create_master_matrix(self):
+        arrays = []
+        for production in self.productions:
+            recipe_array = production.get_recipe_array(self.used_items)
+            arrays.append(recipe_array)
+
+        master_matrix = np.array(*arrays).transpose()
+
+        solution_array = []
+        for item in sorted(self.used_items):
+            solution_array.append(self.outputs.get(item, 0))
+
+        solution_vector = np.array(solution_array)
+
+        self.master_matrix = master_matrix
+        self.solution_vector = solution_vector

@@ -9,15 +9,8 @@ class ModuleName(Enum):
     PRODUCTIVITY = "productivity"
     EFFICIENCY = "efficiency"
 
-
-@dataclass
-class ModuleData:
-    level: int  # 1-3
-    quality: Quality
-
-
 class Module:
-    def __init__(self, name: ModuleName, data: ModuleData):
+    def __init__(self, name: ModuleName, level: int, quality: Quality):
         self.name = name
-        self.level = data.level
-        self.quality = data.quality
+        self.level = level
+        self.quality = quality

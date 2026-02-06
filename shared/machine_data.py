@@ -5,11 +5,8 @@ from .module import Module
 
 @dataclass
 class MachineData:
-    quality: Quality
     speed: float
     modules: list[Module]
-    beacons: int
-    beacon_quality: Quality
     level: int = 1  # only applicable to assemblers, available: 1, 2, 3
 
 
