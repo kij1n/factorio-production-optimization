@@ -23,6 +23,7 @@ class Factory:
 
         self.master_matrix = None
         self.solution_vector = None
+        self.recipe_count = None
 
     def _create_production_instances(self) -> list[Production]:
         productions = []
@@ -68,3 +69,15 @@ class Factory:
 
         self.master_matrix = master_matrix
         self.solution_vector = solution_vector
+
+    def find_solution(self):
+        solution_array = np.linalg.solve(self.master_matrix, self.solution_vector)
+        self.recipe_count = solution_array
+
+    def get_machine_count(self):
+        machines = {}
+        for i, production in enumerate(self.productions):
+            machines[production.recipe.recipe_name] = production.get_machines_qty(
+                self.recipe_count(i)
+            )
+        return machines

@@ -1,4 +1,3 @@
-from items import Item
 from shared import MachineName
 
 
@@ -15,10 +14,12 @@ class Recipe:
         output_values: dict,
         time,
         machine_name: MachineName,
+        recipe_name: RecipeName,
         base_productivity: float = 100,
     ):
         self.input_values = input_values
         self.output_values = output_values
         self.time = time
         self.machine_name = machine_name
+        self.recipe_name = recipe_name
         self.base_prod = base_productivity / 100

@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from .quality import Quality
 from .module import Module
 
 

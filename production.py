@@ -1,4 +1,5 @@
 from shared import Recipe, Machine, Item
+import numpy as np
 
 
 class Production:
@@ -15,8 +16,12 @@ class Production:
         }
         return aug_recipe
 
-    def get_machines_qty(self) -> int:
-        pass
+    def get_machines_qty(self, recipes_per_sec: float) -> int:
+        return int(
+            np.ceil(
+                recipes_per_sec * self.augmented_recipe.time / self.machine.get_speed()
+            )
+        )
 
     def get_recipe_array(self, items: set[Item]) -> list[int]:
         """
