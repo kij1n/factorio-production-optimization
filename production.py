@@ -11,6 +11,8 @@ class Production:
         aug_recipe = recipe
         prod = recipe.base_prod + self.machine.get_prod()
 
-    
     def get_machines_qty(self) -> int:
+        pass
+
+    def get_recipe_array(items: set[Item]) -> list[Int]:
         pass

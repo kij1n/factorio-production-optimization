@@ -1,6 +1,7 @@
 from recipes import *
 import numpy as np
 
+
 def get_amounts_used(recipe):
     """
     Get the amount each recipe uses
@@ -13,9 +14,11 @@ def get_amounts_used(recipe):
     amounts = [
         output_values.get(Item.HEAVY_OIL, 0) - input_values.get(Item.HEAVY_OIL, 0),
         output_values.get(Item.LIGHT_OIL, 0) - input_values.get(Item.LIGHT_OIL, 0),
-        output_values.get(Item.PETROLEUM_GAS, 0) - input_values.get(Item.PETROLEUM_GAS, 0)
+        output_values.get(Item.PETROLEUM_GAS, 0)
+        - input_values.get(Item.PETROLEUM_GAS, 0),
     ]
     return amounts
+
 
 def oil_processing(heavy_oil, light_oil, gas):
     """
@@ -28,14 +31,16 @@ def oil_processing(heavy_oil, light_oil, gas):
     recipes = (
         Recipes.recipes[RecipeName.HEAVY_OIL_CRACKING],
         Recipes.recipes[RecipeName.LIGHT_OIL_CRACKING],
-        Recipes.recipes[RecipeName.ADVANCED_OIL_PROCESSING]
+        Recipes.recipes[RecipeName.ADVANCED_OIL_PROCESSING],
     )
-    recipe_amounts = np.array([
-        # heavy oil produced, light oil produced, gas produced
-        get_amounts_used(recipes[0]),
-        get_amounts_used(recipes[1]),
-        get_amounts_used(recipes[2])
-    ]).transpose()
+    recipe_amounts = np.array(
+        [
+            # heavy oil produced, light oil produced, gas produced
+            get_amounts_used(recipes[0]),
+            get_amounts_used(recipes[1]),
+            get_amounts_used(recipes[2]),
+        ]
+    ).transpose()
     target_amounts = np.array([heavy_oil, light_oil, gas])
     recipe_amounts = np.linalg.solve(recipe_amounts, target_amounts)
 

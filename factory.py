@@ -4,9 +4,12 @@ from shared import Machine, Item, Recipe, MachineName
 
 class Factory:
     def __init__(
-            self, outputs: dict[Item, float], inputs: list[Item],
-            machines: dict[MachineName, Machine], forced_recipes: list[Recipe],
-            available_recipes: list[Recipe]
+        self,
+        outputs: dict[Item, float],
+        inputs: list[Item],
+        machines: dict[MachineName, Machine],
+        forced_recipes: list[Recipe],
+        available_recipes: list[Recipe],
     ):
         self.outputs = outputs
         self.inputs = inputs
@@ -20,9 +23,7 @@ class Factory:
     def _create_production_instances(self) -> list[Production]:
         productions = []
         for recipe in self.used_recipes:
-            production = Production(
-                recipe, self.machines[recipe.machine_name]
-            )
+            production = Production(recipe, self.machines[recipe.machine_name])
             productions.append(production)
         return productions
 
@@ -37,11 +38,7 @@ class Factory:
                 if output in recipe.output_values.keys():
                     recipes.append(recipe)
         for input_resource in self.inputs:
-            recipe = Recipe(
-                {},
-                {input_resource: 1},
-                1, None
-            )
+            recipe = Recipe({}, {input_resource: 1}, 1, None)
             recipes.append(recipe)
         return recipes
 
