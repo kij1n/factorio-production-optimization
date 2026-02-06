@@ -18,9 +18,6 @@ class Production:
         }
         return aug_recipe
 
-    def print_recipe_per_sec(self):
-        pass
-
     def get_machines_qty(self, recipes_per_sec: float) -> int:
         speed = self.machine.get_speed() if self.machine is not None else 1
 

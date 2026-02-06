@@ -38,7 +38,6 @@ class Machine:
                     self.module_data[module.name.value][str(module.level)][
                         str(module.quality.value)
                     ]
-                    / 100
                 )
         return bonus
 
@@ -50,5 +49,5 @@ class Machine:
         prod = 0
         for module in self.data.modules:
             if module.name == ModuleName.PRODUCTIVITY:
-                prod += self.module_data[module.name][module.level]
+                prod += self.module_data[module.name.value][str(module.level)][str(module.quality.value)]
         return prod

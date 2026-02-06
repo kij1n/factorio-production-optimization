@@ -41,7 +41,7 @@ def prepare_refinery_machine(constants) -> Machine:
     ]
 
     refinery_data = MachineData(
-        constants["machines"][MachineName.REFINERY][str(refinery_quality.value)], []
+        constants["machines"][MachineName.REFINERY][str(refinery_quality.value)], refinery_modules
     )
 
     beacon_qty = 4
