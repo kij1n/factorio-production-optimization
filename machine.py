@@ -33,7 +33,12 @@ class Machine:
         multiplier += self._get_bonus_modules(name)
         multiplier += self._get_bonus_beacons(name)
 
-        return max(multiplier, 0.2)
+        return max(multiplier, 0.2) * self._mul_by_speed(name)
+
+    def _mul_by_speed(self, name: ModuleName):
+        if name == ModuleName.SPEED:
+            return self.data.speed
+        return 1
 
     def _get_bonus_modules(self, name: ModuleName):
         bonus = 0
