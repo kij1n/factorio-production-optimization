@@ -48,17 +48,21 @@ class Machine:
                 bonus -= self._get_bonus_if(
                     module, ModuleName.PRODUCTIVITY, "energy_consumption"
                 )
+                bonus -= self._get_bonus_if(
+                    module, ModuleName.SPEED, "energy_consumption"
+                )
+
             elif name == ModuleName.PRODUCTIVITY:
                 bonus += self._get_bonus_if(module, name)
 
         return bonus
 
     def _get_bonus_beacons(self, name: ModuleName):
-        if name == ModuleName.PRODUCTIVITY:
+        if name == ModuleName.PRODUCTIVITY or self.beacons[0].modules is None:
             return 0
 
         bonus = 0
-        for module in self.beacons[0]:
+        for module in self.beacons[0].modules:
             bonus += self._get_bonus_if(module, name)
         return bonus * self._get_comb_trans_str(*self.beacons)
 
