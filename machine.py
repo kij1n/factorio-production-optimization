@@ -8,6 +8,13 @@ class Machine:
     """
     A class dedicated to hold information about a single machine.
     Its modules, beacons, speed, quality, etc.
+    Attributes:
+        data (MachineData): contains basic information about a machine
+        module_data (dict): contains information about moduls used by a maschine
+        beacons (tuple[Beacon, int]): information about beacons affecting this machine
+        speed (float): calculated speed of a machine
+        prod (float): producitivity multiplier
+        eff (float): power usage multiplier, inclused penalty from productivity modules
     """
 
     def __init__(
@@ -17,55 +24,60 @@ class Machine:
         self.module_data = module_data
         self.beacons = beacons
 
-    def get_speed(self):
-        # calculate speed based on modules, beacons, etc.
-        speed = self.data.speed
+        self.speed = self._get_bonus(ModuleName.SPEED)
+        self.prod = self._get_bonus(ModuleName.PRODUCTIVITY)
+        self.eff = self._get_bonus(ModuleName.EFFICIENCY)
+
+    def _get_bonus(self, name: ModuleName):
         multiplier = 1
+        multiplier += self._get_bonus_modules(name)
+        multiplier += self._get_bonus_beacons(name)
 
-        if self.beacons[1] <= 0:
-            return speed
+        return max(multiplier, 0.2)
 
-        comb_trans_str = self._get_comb_trans_str(*self.beacons)
-        multiplier += comb_trans_str * self._get_speed_bonus_beacons()
-        multiplier += self._get_speed_bonus_modules()
-        return speed * max(multiplier, 0.2)  # 0.2 is a cap in Factorio
-
-    def _get_speed_bonus_modules(self):
+    def _get_bonus_modules(self, name: ModuleName):
         bonus = 0
         for module in self.data.modules:
-            if module.name == ModuleName.SPEED:
-                bonus += (
-                    self.module_data[module.name.value][str(module.level)][
-                        str(module.quality.value)
-                    ]
+            if name == ModuleName.SPEED:
+                bonus += self._get_bonus_if(module, name)
+                bonus -= self._get_bonus_if(
+                    module, ModuleName.PRODUCTIVITY, "speed_decrease"
                 )
-            elif module.name == ModuleName.PRODUCTIVITY:
-                bonus -= (
-                    self.module_data[module.name.value][str(module.level)][
-                        "speed_decrease"
-                    ]
+            elif name == ModuleName.EFFICIENCY:
+                bonus -= self._get_bonus_if(module, name)
+                bonus -= self._get_bonus_if(
+                    module, ModuleName.PRODUCTIVITY, "energy_consumption"
                 )
+            elif name == ModuleName.PRODUCTIVITY:
+                bonus += self._get_bonus_if(module, name)
+
         return bonus
 
-    def _get_speed_bonus_beacons(self):
+    def _get_bonus_beacons(self, name: ModuleName):
+        if name == ModuleName.PRODUCTIVITY:
+            return 0
+
         bonus = 0
-        beacon = self.beacons[0]
-        for module in beacon.modules:
-            if module.name == ModuleName.SPEED:
-                bonus += (
-                    self.module_data[module.name.value][str(module.level)][
-                        str(module.quality.value)
-                    ]
-                )
-        return bonus
+        for module in self.beacons[0]:
+            bonus += self._get_bonus_if(module, name)
+        return bonus * self._get_comb_trans_str(*self.beacons)
+
+    def _get_bonus_if(self, module: Module, name: ModuleName, special: str = ""):
+        if module.name == name:
+            return self.module_data[module.name.value][str(module.level)][
+                str(module.quality.value) if special == "" else special
+            ]
+        return 0
 
     @staticmethod
     def _get_comb_trans_str(beacon, n):
         return beacon.efficiency * np.sqrt(n)
 
     def get_prod(self):
-        prod = 0
-        for module in self.data.modules:
-            if module.name == ModuleName.PRODUCTIVITY:
-                prod += self.module_data[module.name.value][str(module.level)][str(module.quality.value)]
-        return prod
+        return self.prod
+
+    def get_speed(self):
+        return self.speed
+
+    def get_eff(self):
+        return self.eff

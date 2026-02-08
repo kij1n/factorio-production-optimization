@@ -2,10 +2,12 @@ from shared import Recipe, Item
 import numpy as np
 from machine import Machine
 
+
 class Production:
     def __init__(self, recipe: Recipe, machine: Machine):
         self.machine = machine
         self.augmented_recipe = self._calc_recipe_values(recipe)
+        self.machines_qty = None
 
     def _calc_recipe_values(self, recipe) -> Recipe:
         if self.machine is None:
@@ -19,13 +21,12 @@ class Production:
         return aug_recipe
 
     def get_machines_qty(self, recipes_per_sec: float) -> int:
+        if self.machines_qty is not None:
+            return self.machines_qty
+
         speed = self.machine.get_speed() if self.machine is not None else 1
 
-        return int(
-            np.ceil(
-                recipes_per_sec * self.augmented_recipe.time / speed
-            )
-        )
+        return int(np.ceil(recipes_per_sec * self.augmented_recipe.time / speed))
 
     def get_recipe_array(self, items: set[Item]) -> list[int]:
         """

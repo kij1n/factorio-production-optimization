@@ -1,7 +1,8 @@
 from production import Production
-from shared import Item, Recipe, MachineName, RecipeName
+from shared import *
 import numpy as np
 from machine import Machine
+
 
 class Factory:
     def __init__(
@@ -28,7 +29,9 @@ class Factory:
     def _create_production_instances(self) -> list[Production]:
         productions = []
         for recipe in self.used_recipes:
-            production = Production(recipe, self.machines.get(recipe.machine_name, None))
+            production = Production(
+                recipe, self.machines.get(recipe.machine_name, None)
+            )
             productions.append(production)
         return productions
 
@@ -86,3 +89,18 @@ class Factory:
                 self.recipe_count[i]
             )
         return machines
+
+    def get_power_usage(
+        self,
+        per_production: bool = False,
+        prefix: UnitPrefix = UnitPrefix.NONE,
+    ) -> tuple[float, str] | list[tuple[str, float, str]]:
+        if per_production:
+            return self._get_power_per_prod()
+        return self._get_total_power()
+
+    def _get_total_power(self):
+        pass
+
+    def _get_power_per_prod(self):
+        pass
