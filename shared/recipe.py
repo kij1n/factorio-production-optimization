@@ -16,7 +16,7 @@ class Recipe:
         time,
         machine_name: MachineName,
         recipe_name: RecipeName,
-        base_productivity: float = 100,
+        base_productivity: float = 0,
     ):
         self.input_values = input_values
         self.output_values = output_values

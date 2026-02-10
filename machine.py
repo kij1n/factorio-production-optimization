@@ -24,9 +24,17 @@ class Machine:
         self.module_data = module_data
         self.beacons = beacons
 
-        self.speed = self._get_bonus(ModuleName.SPEED)
-        self.prod = self._get_bonus(ModuleName.PRODUCTIVITY)
-        self.eff = self._get_bonus(ModuleName.EFFICIENCY)
+    @property
+    def speed(self) -> float:
+        return self._get_bonus(ModuleName.SPEED)
+
+    @property
+    def effi(self) -> float:
+        return self._get_bonus(ModuleName.EFFICIENCY)
+
+    @property
+    def productivity(self) -> float:
+        return self._get_bonus(ModuleName.PRODUCTIVITY)
 
     def _get_bonus(self, name: ModuleName):
         multiplier = 1
@@ -81,12 +89,3 @@ class Machine:
     @staticmethod
     def _get_comb_trans_str(beacon, n):
         return beacon.efficiency * np.sqrt(n)
-
-    def get_prod(self):
-        return self.prod
-
-    def get_speed(self):
-        return self.speed
-
-    def get_eff(self):
-        return self.eff

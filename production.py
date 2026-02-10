@@ -1,6 +1,7 @@
 from shared import Recipe, Item
 import numpy as np
 from machine import Machine
+from copy import deepcopy
 
 
 class Production:
@@ -9,12 +10,16 @@ class Production:
         self.augmented_recipe = self._calc_recipe_values(recipe)
         self.machines_qty = None
 
+    @property
+    def power_usage():
+        pass
+
     def _calc_recipe_values(self, recipe) -> Recipe:
         if self.machine is None:
             return recipe
 
-        aug_recipe = recipe
-        prod = recipe.base_prod + self.machine.get_prod()
+        aug_recipe = deepcopy(recipe)
+        prod = recipe.base_prod + self.machine.productivity
         aug_recipe.output_values = {
             key: value * prod for key, value in aug_recipe.output_values.items()
         }
@@ -24,7 +29,7 @@ class Production:
         if self.machines_qty is not None:
             return self.machines_qty
 
-        speed = self.machine.get_speed() if self.machine is not None else 1
+        speed = self.machine.speed if self.machine is not None else 1
 
         return int(np.ceil(recipes_per_sec * self.augmented_recipe.time / speed))
 
