@@ -37,11 +37,13 @@ def prepare_refinery_machine(constants) -> Machine:
     refinery_modules = [
         Module(ModuleName.PRODUCTIVITY, 3, Quality.LEGENDARY),
         Module(ModuleName.PRODUCTIVITY, 3, Quality.LEGENDARY),
-        Module(ModuleName.PRODUCTIVITY, 3, Quality.LEGENDARY)
+        Module(ModuleName.PRODUCTIVITY, 3, Quality.LEGENDARY),
     ]
 
     refinery_data = MachineData(
-        MachineName.REFINERY, constants["machines"][MachineName.REFINERY][str(refinery_quality.value)], refinery_modules
+        MachineName.REFINERY,
+        constants["machines"][MachineName.REFINERY][str(refinery_quality.value)],
+        refinery_modules,
     )
 
     beacon_qty = 4
@@ -53,7 +55,7 @@ def prepare_refinery_machine(constants) -> Machine:
 
     refinery_beacons = (
         Beacon(constants["beacons"][str(beacon_quality.value)], beacon_modules),
-        beacon_qty
+        beacon_qty,
     )
 
     return Machine(refinery_data, constants["modules"], refinery_beacons)
@@ -64,9 +66,13 @@ def prepare_chm_machine(constants) -> Machine:
     chm_modules = [
         Module(ModuleName.PRODUCTIVITY, 3, Quality.LEGENDARY),
         Module(ModuleName.PRODUCTIVITY, 3, Quality.LEGENDARY),
-        Module(ModuleName.PRODUCTIVITY, 3, Quality.LEGENDARY)
+        Module(ModuleName.PRODUCTIVITY, 3, Quality.LEGENDARY),
     ]
-    chm_data = MachineData(MachineName.CH_PLANT, constants["machines"][MachineName.CH_PLANT][str(chm_quality.value)], chm_modules)
+    chm_data = MachineData(
+        MachineName.CH_PLANT,
+        constants["machines"][MachineName.CH_PLANT][str(chm_quality.value)],
+        chm_modules,
+    )
 
     beacon_qty = 4
     beacon_quality = Quality.LEGENDARY
@@ -77,7 +83,7 @@ def prepare_chm_machine(constants) -> Machine:
 
     chm_beacons = (
         Beacon(constants["beacons"][str(beacon_quality.value)], beacon_modules),
-        beacon_qty
+        beacon_qty,
     )
 
     return Machine(chm_data, constants["modules"], chm_beacons)
@@ -87,7 +93,10 @@ def prepare_asm_machine(constants) -> Machine:
     asm_level = 1
     asm_quality = Quality.LEGENDARY
     asm_data = MachineData(
-        MachineName.ASM, constants["machines"][MachineName.ASM][str(asm_level)][str(asm_quality.value)], [], asm_level
+        MachineName.ASM,
+        constants["machines"][MachineName.ASM][str(asm_level)][str(asm_quality.value)],
+        [],
+        asm_level,
     )
     asm_beacons = (Beacon(), 0)
     return Machine(asm_data, constants["modules"], asm_beacons)
@@ -114,15 +123,16 @@ def main():
     constants = json_loader.load_const()
     machines = prepare_machines(constants)
 
-    outputs = {Item.HEAVY_OIL: 326.25, Item.LIGHT_OIL: 1603.658, Item.PETROLEUM_GAS: 29622.717}
+    outputs = {
+        Item.HEAVY_OIL: 326.25,
+        Item.LIGHT_OIL: 1603.658,
+        Item.PETROLEUM_GAS: 29622.717,
+    }
     inputs = [Item.WATER, Item.CRUDE_OIL]
 
     factory = Factory(outputs, inputs, machines, available_recipes, [])
 
-    factory.create_master_matrix()
-    factory.find_solution()
-
-    solutions = factory.get_machine_count()
+    solutions = factory.machine_count
     print_results(solutions)
 
 

@@ -3,7 +3,7 @@ from .quality import Quality
 from .machine_data import MachineName, MachineData
 from .recipe import Recipe, RecipeName
 from .module import Module, ModuleName
-from .units import TimeUnit, EnergyUnit, UnitPrefix
+from .units import *
 
 __all__ = [
     "Item",

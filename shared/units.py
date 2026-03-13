@@ -1,4 +1,5 @@
 from enum import Enum
+import numpy as np
 
 
 class EnergyUnit(Enum):
@@ -7,7 +8,6 @@ class EnergyUnit(Enum):
 
 
 class UnitPrefix(Enum):
-    AUTO = None  # let the function figure it out
     NANO = (-9, "n")
     MICRO = (-6, "u")
     MILI = (-3, "m")
@@ -26,3 +26,17 @@ class TimeUnit(Enum):
     HOUR = 3600
     DAY = 3600 * 24
 
+
+def find_unit(order: int) -> UnitPrefix:
+    exponent = 3 * np.floor(order / 3)
+
+    if exponent < UnitPrefix[0].value[0]:
+        return UnitPrefix[0]
+    elif exponent > UnitPrefix[-1].value[0]:
+        return UnitPrefix[-1]
+
+    for prefix in list(UnitPrefix)[1:-1]:
+        if exponent == prefix.value[0]:
+            return prefix
+
+    return UnitPrefix.NONE
